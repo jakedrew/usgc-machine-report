@@ -247,7 +247,7 @@ fi
 if [ -z "$net_hostname" ]; then net_hostname="Not Defined"; fi
 
 net_machine_ip=$(get_ip_addr)
-net_client_ip=$(who am i | awk '{print $5}' | tr -d '()')
+net_client_ip=$(who am i | sed -n 's/.*(\(.*\)).*/\1/p')
 if [ -z "$net_client_ip" ]; then
     net_client_ip="Not connected"
 fi
@@ -299,13 +299,13 @@ else
 fi
 
 # Last login and Uptime
-last_login=$(lastlog -u "$USER")
+last_login=$(lastlog2 -u "$USER")
 last_login_ip=$(echo "$last_login" | awk 'NR==2 {print $3}')
 
 # Check if last_login_ip is an IP address
 if [[ "$last_login_ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     last_login_ip_present=1
-    last_login_time=$(echo "$last_login" | awk 'NR==2 {print $6, $7, $10, $8}')
+    last_login_time=$(echo "$last_login" | awk 'NR==2 {print $5, $6, $9, $7}')
 else
     last_login_time=$(echo "$last_login" | awk 'NR==2 {print $4, $5, $8, $6}')
     # Check for **Never logged in** edge case
